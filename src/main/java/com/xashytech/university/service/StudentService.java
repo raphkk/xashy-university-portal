@@ -17,48 +17,63 @@ public class StudentService {
     
     private static final List<Student> students = new ArrayList<>();
     private static final AtomicLong idCounter = new AtomicLong(1);
+    private static boolean initialized = false;
     
     // Initialize with some sample data
     static {
         initializeSampleData();
     }
     
-    private static void initializeSampleData() {
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        
-        Student student1 = new Student();
-        student1.setId(idCounter.getAndIncrement());
-        student1.setName("Alice Johnson");
-        student1.setEmail("alice.johnson@xashytech.edu");
-        student1.setMajor("Computer Science");
-        student1.setEnrollmentDate(currentDate);
-        students.add(student1);
-        
-        Student student2 = new Student();
-        student2.setId(idCounter.getAndIncrement());
-        student2.setName("Bob Smith");
-        student2.setEmail("bob.smith@xashytech.edu");
-        student2.setMajor("Information Technology");
-        student2.setEnrollmentDate(currentDate);
-        students.add(student2);
-        
-        Student student3 = new Student();
-        student3.setId(idCounter.getAndIncrement());
-        student3.setName("Carol Davis");
-        student3.setEmail("carol.davis@xashytech.edu");
-        student3.setMajor("Software Engineering");
-        student3.setEnrollmentDate(currentDate);
-        students.add(student3);
-        
-        Student student4 = new Student();
-        student4.setId(idCounter.getAndIncrement());
-        student4.setName("David Wilson");
-        student4.setEmail("david.wilson@xashytech.edu");
-        student4.setMajor("Data Science");
-        student4.setEnrollmentDate(currentDate);
-        students.add(student4);
-        
-        System.out.println("Initialized " + students.size() + " sample students");
+    private static synchronized void initializeSampleData() {
+        if (!initialized) {
+            students.clear();
+            idCounter.set(1);
+            
+            String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            
+            Student student1 = new Student();
+            student1.setId(idCounter.getAndIncrement());
+            student1.setName("Alice Johnson");
+            student1.setEmail("alice.johnson@xashytech.edu");
+            student1.setMajor("Computer Science");
+            student1.setEnrollmentDate(currentDate);
+            students.add(student1);
+            
+            Student student2 = new Student();
+            student2.setId(idCounter.getAndIncrement());
+            student2.setName("Bob Smith");
+            student2.setEmail("bob.smith@xashytech.edu");
+            student2.setMajor("Information Technology");
+            student2.setEnrollmentDate(currentDate);
+            students.add(student2);
+            
+            Student student3 = new Student();
+            student3.setId(idCounter.getAndIncrement());
+            student3.setName("Carol Davis");
+            student3.setEmail("carol.davis@xashytech.edu");
+            student3.setMajor("Software Engineering");
+            student3.setEnrollmentDate(currentDate);
+            students.add(student3);
+            
+            Student student4 = new Student();
+            student4.setId(idCounter.getAndIncrement());
+            student4.setName("David Wilson");
+            student4.setEmail("david.wilson@xashytech.edu");
+            student4.setMajor("Data Science");
+            student4.setEnrollmentDate(currentDate);
+            students.add(student4);
+            
+            initialized = true;
+            System.out.println("Initialized " + students.size() + " sample students");
+        }
+    }
+    
+    /**
+     * Reset service to initial state (for testing)
+     */
+    public static synchronized void resetToInitialState() {
+        initialized = false;
+        initializeSampleData();
     }
     
     /**
