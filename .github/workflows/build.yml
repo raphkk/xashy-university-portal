@@ -25,4 +25,7 @@ jobs:
       
       - name: Deploy to GitHub Packages 
         run: mvn deploy --settings settings.xml
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
        
