@@ -46,6 +46,15 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!-- New: GitHub Packages repository -->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages - jay-devops237/xashy-university-portal</name>
+            <url>https://maven.pkg.github.com/jay-devops237/xashy-university-portal</url>
+        </repository>
+    </distributionManagement>
     
     <build>
         <finalName>xashy-university-portal</finalName>
