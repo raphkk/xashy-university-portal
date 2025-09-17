@@ -21,6 +21,7 @@ jobs:
           distribution: temurin 
           java-version: '11'
           cache: maven
+          server-id: github
       - name: build with maven 
         run: mvn clean package 
       - name: deploy to github packages 
