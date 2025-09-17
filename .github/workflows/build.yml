@@ -1,33 +1,30 @@
-name:  Build and deploy xashy-student-portal
-
+name: Build and deploy xashy-student-portal
 on: 
   push:
     branches:
       - main
-
 jobs: 
-
   Build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - name: clone the repo 
+      - name: Clone the repo 
         uses: actions/checkout@v4
-      - name: setup maven and java
+      
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
            distribution: temurin
            java-version: '11'
            cache: maven
-           server-id: github                  
-           server-username: GITHUB_ACTOR      
-           server-password: ${{ secrets.GITHUB_TOKEN }}
-      - name: build with maven 
+      
+      - name: Build with Maven 
         run: mvn clean package 
-      - name: deploy to github packages 
-        run: mvn deploy 
-
-
-    
+      
+      - name: Deploy to GitHub Packages 
+        run: mvn deploy --settings settings.xml
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
