@@ -1,21 +1,18 @@
 pipeline {
   agent any
 
-  parameters {
-    string(name: 'CUSTOM_TAG', defaultValue: 'latest', description: 'Docker image tag')
-  }
-
   environment {
     AWS_REGION = 'us-east-1'
     ECR_REPO = 'xashy-university-portal'
     ECR_REGISTRY = '183295449773.dkr.ecr.us-east-1.amazonaws.com'
-    IMAGE_TAG = "${ECR_REGISTRY}/${ECR_REPO}:${CUSTOM_TAG}"
+    IMAGE_TAG = "${ECR_REGISTRY}/${ECR_REPO}:latest"
+    ZAP_REPORT = 'zap-report.html'
   }
 
   stages {
     stage('Checkout Code') {
       steps {
-        git 'https://github.com/raphkk/xashy-university-portal.git'
+        git url: 'https://github.com/jay-devops237/xashy-university-portal.git', branch: 'main'
       }
     }
 
@@ -42,6 +39,23 @@ pipeline {
     stage('Push Docker Image to ECR') {
       steps {
         sh 'docker push $IMAGE_TAG'
+      }
+    }
+
+    stage('Run DAST Scan with ZAP') {
+      steps {
+        // ZAP will scan the running app — ensure it's accessible
+        sh '''
+          docker run --rm -v $(pwd):/zap/wrk/:rw \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost:8080 -r $ZAP_REPORT || true
+        '''
+      }
+    }
+
+    stage('Archive ZAP Report') {
+      steps {
+        archiveArtifacts artifacts: "${ZAP_REPORT}", allowEmptyArchive: true
       }
     }
   }
