@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  parameters {
+    string(name: 'CUSTOM_TAG', defaultValue: 'latest', description: 'Docker image tag')
+  }
+
   environment {
     AWS_REGION = 'us-east-1'
     ECR_REPO = 'xashy-university-portal'
@@ -12,7 +16,7 @@ pipeline {
   stages {
     stage('Checkout Code') {
       steps {
-        git url: 'https://github.com/jay-devops237/xashy-university-portal.git', branch: 'main'
+        git url: 'https://github.com/raphkk/xashy-university-portal.git', branch: 'main'
       }
     }
 
@@ -48,7 +52,8 @@ pipeline {
         sh '''
           docker run --rm -v $(pwd):/zap/wrk/:rw \
             ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py -t http://localhost:8080 -r $ZAP_REPORT || true
+            zap-baseline.py -t http://localhost:8080 -r $ZAP_REPORT || true \
+            zap.sh -cmd -quickurl "$TARGET_URL" -quickout /zap/wrk/zap-report.html
         '''
       }
     }
